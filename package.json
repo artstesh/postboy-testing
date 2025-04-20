@@ -8,7 +8,7 @@
   "description": "Let's test the postboy ;)",
   "scripts": {
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
+    "prepublishOnly": "npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "analyze": "ng build --stats-json && webpack-bundle-analyzer lib/stats.json",

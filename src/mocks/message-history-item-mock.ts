@@ -1,4 +1,4 @@
-import { PostboyGenericMessage } from '../models/postboy-generic-message';
+import { PostboyGenericMessage } from '@artstesh/postboy';
 
 export class MessageHistoryItemMock<T extends PostboyGenericMessage> {
   private list: T[] = [];
