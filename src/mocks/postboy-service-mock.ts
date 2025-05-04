@@ -10,24 +10,24 @@ import {
   PostboyService,
 } from '@artstesh/postboy';
 import { MockRecord } from '../models/mock-record.model';
-import { Dictionary } from '@artstesh/collections';
+import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscription';
 
 export class PostboyServiceMock extends PostboyService {
   private subscriptions: string[] = [];
   private _history = new MessageHistoryMock();
-  private _mockedRecords: Dictionary<MockRecord<any>> = new Dictionary();
+  private _mockedRecords = new Map<string, MockRecord<any>>();
 
   mockRecord<T extends PostboyGenericMessage>(model: MockRecord<T>): Subject<T> {
     model.sub = model.sub ?? new Subject();
-    this._mockedRecords.put(model.key, model);
-    super.register(model.key, model.sub);
+    this._mockedRecords.set(model.key, model);
+    this.applications.set(model.key, new PostboySubscription<T>(model.sub, (s) => s.asObservable()));
     return model.sub;
   }
 
   reset(): void {
     this.subscriptions = [];
     this._mockedRecords.forEach((m) => m.sub?.complete());
-    this._mockedRecords = new Dictionary();
+    this._mockedRecords.clear();
     this._history.reset();
   }
 
@@ -44,7 +44,7 @@ export class PostboyServiceMock extends PostboyService {
 
   exec<E extends PostboyExecutor<T>, T>(executor: E): T {
     this._history.add(executor);
-    if (!this.executors.has(executor.id)) this.executors.put(executor.id, (e) => null);
+    if (!this.executors.has(executor.id)) this.executors.set(executor.id, (e) => null);
     return super.exec(executor);
   }
 
@@ -57,13 +57,13 @@ export class PostboyServiceMock extends PostboyService {
 
   fire<T extends PostboyGenericMessage>(message: T) {
     this._history.add(message);
-    if (!this.applications.has(message.id)) this.mockRecord({ key:message.id  });
+    if (!this.applications.has(message.id)) this.mockRecord({ key: message.id });
     super.fire(message);
   }
 
   fireCallback<T>(message: PostboyCallbackMessage<T>, action?: (e: T) => void): Observable<T> {
     this._history.add(message);
-    if (!this.applications.has(message.id)) this.mockRecord({ key:message.id  });
+    if (!this.applications.has(message.id)) this.mockRecord({ key: message.id });
     return super.fireCallback(message, action);
   }
 
