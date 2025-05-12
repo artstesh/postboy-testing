@@ -22,7 +22,10 @@ export class PostboyServiceMock extends PostboyService {
   private middlewareMock = new PostboyMiddlewareServiceMock();
 
   constructor() {
-    super({ getMessageStore: () => new PostboyMessageStoreMock(), getMiddlewareService: () => new PostboyMiddlewareServiceMock() });
+    super({
+      getMessageStore: () => new PostboyMessageStoreMock(),
+      getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
+    });
     this.storeMock = (this as any).store as PostboyMessageStoreMock;
     this.middlewareMock = (this as any).middleware as PostboyMiddlewareServiceMock;
   }
