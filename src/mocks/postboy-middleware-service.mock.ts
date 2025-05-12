@@ -1,3 +1,3 @@
 import { PostboyMiddlewareService } from '@artstesh/postboy';
 
-export class PostboyMiddlewareServiceMock  extends PostboyMiddlewareService{}
+export class PostboyMiddlewareServiceMock extends PostboyMiddlewareService {}
