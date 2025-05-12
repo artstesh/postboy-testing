@@ -11,16 +11,24 @@ import {
 } from '@artstesh/postboy';
 import { MockRecord } from '../models/mock-record.model';
 import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscription';
+import { PostboyMessageStoreMock } from './postboy-message-store.mock';
+import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock';
 
 export class PostboyServiceMock extends PostboyService {
   private subscriptions: string[] = [];
   private _history = new MessageHistoryMock();
   private _mockedRecords = new Map<string, MockRecord<any>>();
+  private storeMock = new PostboyMessageStoreMock();
+  private middlewareMock = new PostboyMiddlewareServiceMock();
+
+  constructor() {
+    super({getMessageStore: () => this.storeMock, getMiddlewareService: () => this.middlewareMock});
+  }
 
   mockRecord<T extends PostboyGenericMessage>(model: MockRecord<T>): Subject<T> {
     model.sub = model.sub ?? new Subject();
     this._mockedRecords.set(model.key, model);
-    this.applications.set(model.key, new PostboySubscription<T>(model.sub, (s) => s.asObservable()));
+    this.storeMock.apps.set(model.key, new PostboySubscription<T>(model.sub, (s) => s.asObservable()));
     return model.sub;
   }
 
@@ -44,26 +52,26 @@ export class PostboyServiceMock extends PostboyService {
 
   exec<E extends PostboyExecutor<T>, T>(executor: E): T {
     this._history.add(executor);
-    if (!this.executors.has(executor.id)) this.executors.set(executor.id, (e) => null);
+    if (!this.storeMock.execs.has(executor.id)) this.storeMock.execs.set(executor.id, (e) => null);
     return super.exec(executor);
   }
 
   public sub<T extends PostboyGenericMessage>(type: MessageType<T>): Observable<T> {
     const key = checkId(type);
     this.subscriptions.push(key);
-    if (!this.applications.has(key)) this.mockRecord({ key });
+    if (!this.storeMock.apps.has(key)) this.mockRecord({ key });
     return super.sub(type);
   }
 
   fire<T extends PostboyGenericMessage>(message: T) {
     this._history.add(message);
-    if (!this.applications.has(message.id)) this.mockRecord({ key: message.id });
+    if (!this.storeMock.apps.has(message.id)) this.mockRecord({ key: message.id });
     super.fire(message);
   }
 
   fireCallback<T>(message: PostboyCallbackMessage<T>, action?: (e: T) => void): Observable<T> {
     this._history.add(message);
-    if (!this.applications.has(message.id)) this.mockRecord({ key: message.id });
+    if (!this.storeMock.apps.has(message.id)) this.mockRecord({ key: message.id });
     return super.fireCallback(message, action);
   }
 
