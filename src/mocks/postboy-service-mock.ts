@@ -25,7 +25,7 @@ export class PostboyServiceMock extends PostboyService {
     super({
       getMessageStore: () => new PostboyMessageStoreMock(),
       getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
-      getNamespaceStore: () => new PostboyNamespaceStoreMock(this)
+      getNamespaceStore: () => new PostboyNamespaceStoreMock(this),
     });
     this.storeMock = (this as any).store as PostboyMessageStoreMock;
   }
