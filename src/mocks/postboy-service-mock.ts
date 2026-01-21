@@ -13,21 +13,21 @@ import { MockRecord } from '../models/mock-record.model';
 import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscription';
 import { PostboyMessageStoreMock } from './postboy-message-store.mock';
 import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock';
+import { PostboyNamespaceStoreMock } from './postboy-namespace-store.mock';
 
 export class PostboyServiceMock extends PostboyService {
   private subscriptions: string[] = [];
   private _history = new MessageHistoryMock();
   private _mockedRecords = new Map<string, MockRecord<any>>();
   private storeMock = new PostboyMessageStoreMock();
-  private middlewareMock = new PostboyMiddlewareServiceMock();
 
   constructor() {
     super({
       getMessageStore: () => new PostboyMessageStoreMock(),
       getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
+      getNamespaceStore: () => new PostboyNamespaceStoreMock(this)
     });
     this.storeMock = (this as any).store as PostboyMessageStoreMock;
-    this.middlewareMock = (this as any).middleware as PostboyMiddlewareServiceMock;
   }
 
   mockRecord<T extends PostboyGenericMessage>(model: MockRecord<T>): Subject<T> {

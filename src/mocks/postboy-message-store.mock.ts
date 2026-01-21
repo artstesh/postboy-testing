@@ -3,7 +3,7 @@ import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscr
 
 export class PostboyMessageStoreMock extends PostboyMessageStore {
   get apps(): Map<string, PostboySubscription<any>> {
-    return this.applications;
+    return this.messages;
   }
 
   get execs(): Map<string, (e: any) => void> {
