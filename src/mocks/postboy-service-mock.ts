@@ -14,6 +14,7 @@ import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscr
 import { PostboyMessageStoreMock } from './postboy-message-store.mock';
 import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock';
 import { PostboyNamespaceStoreMock } from './postboy-namespace-store.mock';
+import { PostboyContextStoreMock } from './postboy-context-store.mock';
 
 export class PostboyServiceMock extends PostboyService {
   private subscriptions: string[] = [];
@@ -22,10 +23,11 @@ export class PostboyServiceMock extends PostboyService {
   private storeMock = new PostboyMessageStoreMock();
 
   constructor() {
-    super({
+    super({}, {
       getMessageStore: () => new PostboyMessageStoreMock(),
       getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
       getNamespaceStore: () => new PostboyNamespaceStoreMock(this),
+      getPostboyContextService: () => new PostboyContextStoreMock(),
     });
     this.storeMock = (this as any).store as PostboyMessageStoreMock;
   }
@@ -59,6 +61,13 @@ export class PostboyServiceMock extends PostboyService {
     this._history.add(executor);
     if (!this.storeMock.execs.has(executor.id)) this.storeMock.execs.set(executor.id, (e) => null);
     return super.exec(executor);
+  }
+
+  public once<T extends PostboyGenericMessage>(type: MessageType<T>): Observable<T> {
+    const key = checkId(type);
+    this.subscriptions.push(key);
+    if (!this.storeMock.apps.has(key)) this.mockRecord({ key });
+    return super.once(type);
   }
 
   public sub<T extends PostboyGenericMessage>(type: MessageType<T>): Observable<T> {
