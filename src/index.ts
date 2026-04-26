@@ -2,4 +2,4 @@
  * Public API Surface of postboy-testing
  */
 
-export * from './mocks/postboy-service-mock';
+export * from './services/postboy-service-mock';
