@@ -37,8 +37,8 @@ export class PostboyWorld {
 
   dispose() {
     this._postboy.exec(new EliminateNamespace(mockNamespace));
-    this._postboy.dispose();
     this._history.reset();
     this._mocks.dispose();
+    this._postboy.dispose();
   }
 }

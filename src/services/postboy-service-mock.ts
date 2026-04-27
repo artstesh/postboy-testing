@@ -23,11 +23,11 @@ export class PostboyServiceMock extends PostboyService {
     private settings: PostboyTestingSettings = { strict: false },
   ) {
     super({
-      getMessageStore: () => this.storeMock,
+      getMessageStore: () => new PostboyMessageStoreMock(settings.strict),
       getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
       getNamespaceStore: () => new PostboyNamespaceStoreMock(),
     });
-    this.storeMock = new PostboyMessageStoreMock(settings.strict);
+    this.storeMock = (this as any).store as PostboyMessageStoreMock;
   }
 
   private count = (collection: string[], el: string) => collection.filter((e) => e === el).length;

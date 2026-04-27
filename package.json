@@ -15,9 +15,9 @@
     "postversion": "git push && git push --tags",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
-    "test": "ttsc -p tsconfig.test.json && jest --config jest.config.js",
+    "test": "npm run clearjs && jest --config jest.config.js",
     "build": "tsc -p tsconfig.json",
-    "pre-jest": "ttsc -p tsconfig.test.json"
+    "clearjs": "cd src && del /s *.d.ts.map && del /s *.d.ts && del /s *.js.map && del /s *.js"
   },
   "files": [
     "lib/**/*"
@@ -28,7 +28,7 @@
     "url": "git+https://github.com/artstesh/postboy-testing.git"
   },
   "peerDependencies": {
-    "rxjs": ">7.0.0",
+    "rxjs": "^7.0.0",
     "typescript": "^5.0.0",
     "@artstesh/postboy": "^3.3.0"
   },

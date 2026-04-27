@@ -4,7 +4,7 @@ module.exports = {
   transform: {
     ".*.spec.ts": ["ts-jest", {
       astTransformers: {
-        before: ['@artstesh/forger/lib/utils/transformer']
+        before: ['@artstesh/forger']
       }
     }]
   }
