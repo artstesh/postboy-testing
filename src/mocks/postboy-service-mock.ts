@@ -1,5 +1,5 @@
-import { Observable, Subject } from 'rxjs';
-import { MessageHistory } from './message-history';
+import { Observable } from 'rxjs';
+import { MessageHistory } from '../services/message-history';
 import {
   checkId,
   MessageType,
@@ -8,29 +8,22 @@ import {
   PostboyGenericMessage,
   PostboyService,
 } from '@artstesh/postboy';
-import { MockRecord } from '../models/mock-record.model';
-import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscription';
-import { PostboyMessageStoreMock } from '../mocks/postboy-message-store.mock';
-import { PostboyMiddlewareServiceMock } from '../mocks/postboy-middleware-service.mock';
-import { PostboyNamespaceStoreMock } from '../mocks/postboy-namespace-store.mock';
+import { PostboyMessageStoreMock } from './postboy-message-store.mock';
+import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock';
+import { PostboyNamespaceStoreMock } from './postboy-namespace-store.mock';
 import { PostboyTestingSettings } from '../models/postboy-testing.settings';
 
 export class PostboyServiceMock extends PostboyService {
-  private storeMock: PostboyMessageStoreMock;
-
   constructor(
     private _history: MessageHistory,
-    private settings: PostboyTestingSettings = { strict: false },
+    settings: PostboyTestingSettings = { strict: false },
   ) {
     super({
       getMessageStore: () => new PostboyMessageStoreMock(settings.strict),
       getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
       getNamespaceStore: () => new PostboyNamespaceStoreMock(),
     });
-    this.storeMock = (this as any).store as PostboyMessageStoreMock;
   }
-
-  private count = (collection: string[], el: string) => collection.filter((e) => e === el).length;
 
   exec<E extends PostboyExecutor<T>, T>(executor: E): T {
     this._history.addMessage(executor);

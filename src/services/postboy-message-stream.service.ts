@@ -1,4 +1,4 @@
-import { PostboyServiceMock } from './postboy-service-mock';
+import { PostboyServiceMock } from '../mocks/postboy-service-mock';
 import {
   AddNamespace,
   MessageType,
@@ -9,17 +9,15 @@ import {
 } from '@artstesh/postboy';
 
 export class PostboyMessageStreamService {
-  private _registry: PostboyAbstractRegistrator;
-  constructor(private postboy: PostboyServiceMock) {
-    this._registry = postboy.exec(new AddNamespace('0536f0d5-40e1-45ce-8f4b-d87fee9ea67c'));
+  constructor(
+    private postboy: PostboyServiceMock,
+    private _registry: PostboyAbstractRegistrator,
+  ) {
   }
 
-  mockSub<T extends PostboyMessage>(
-    type: MessageType<T>,
-    action: (m: T) => T extends PostboyCallbackMessage<any> ? any : void,
-  ): void {
-    this._registry.recordReplay(type);
-    this.postboy.sub(type).subscribe(action);
+  mockEvent<T extends PostboyMessage>(message: T): void {
+    this._registry.recordReplay(message.constructor as MessageType<T>);
+    this.postboy.fire(message);
   }
 
   mockCallback<R, T extends PostboyCallbackMessage<R>>(type: MessageType<T>, action: (m: T) => R): void {

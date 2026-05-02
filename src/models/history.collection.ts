@@ -1,29 +1,29 @@
 export class HistoryCollection<T> {
   private _items: T[] = [];
 
-  add(item: T) {
+  add(item: T) : void{
     this._items.push(item);
   }
-  hasItem(item: T) {
+  hasItem(item: T) : boolean{
     return this._items.includes(item);
   }
-  has(predicate: (i: T) => boolean) {
+  has(predicate: (i: T) => boolean): boolean {
     return this._items.some(predicate);
   }
-  get last() {
-    return this._items[this._items.length - 1];
+  get last(): T | null {
+    return this._items[this._items.length - 1] ?? null;
   }
-  get first() {
-    return this._items[0];
+  get first(): T | null {
+    return this._items[0] ?? null;
   }
-  get all() {
+  get all(): T[] {
     return [...this._items];
   }
-  get length() {
+  get length(): number {
     return this._items.length;
   }
 
-  clear() {
+  clear(): void {
     this._items = [];
   }
 }
