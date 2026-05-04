@@ -57,10 +57,10 @@ export class PostboyWorld {
   }
 
   dispose() {
-    this._postboy.exec(new EliminateNamespace(mockNamespace));
     this._history.reset();
     this._mocks.dispose();
     this._waiter.dispose();
+    this._postboy.exec(new EliminateNamespace(mockNamespace));
     this._postboy.dispose();
   }
 }

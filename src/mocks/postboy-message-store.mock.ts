@@ -10,8 +10,8 @@ export class PostboyMessageStoreMock extends PostboyMessageStore {
   }
 
   override getMessage(id: string, name: string): PostboySubscription<any> {
-    if (!this.strict && !this.messages.get(id)) this.registerMessage(id, new PostboySubscription(new Subject()));
-    return super.getMessage(id, name);
+      if (!this.strict && !this.messages.get(id)) this.registerMessage(id, new PostboySubscription(new Subject()));
+      return super.getMessage(id, name);
   }
 
   override getExecutor<T>(id: string): (e: PostboyExecutor<T>) => T {

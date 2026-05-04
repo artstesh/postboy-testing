@@ -13,6 +13,7 @@ import { MessageHistory } from './message-history';
 import { WaitManyOptions } from '../models/wait-many.options';
 import { Subscription } from 'rxjs';
 import { WaitSilenceOptions } from '../models/wait-silence.options';
+import { PostboyCallbackResult } from './given.service';
 
 const waiterNamespace = 'waiter-namespace-0a809c2d-1a76-4c40-8b2f-a78c27ffef2e';
 
@@ -25,7 +26,6 @@ export class PostboyWaiterService {
   ) {
     this._registry = this._postboy.exec(new AddNamespace(waiterNamespace));
   }
-
 
   waitFor<T extends PostboyGenericMessage>(type: MessageType<T>, options: WaitOptions<T> = {}): Promise<T> {
     const timeout = this._getTimeout(options);
@@ -158,64 +158,61 @@ export class PostboyWaiterService {
     });
   }
 
-  waitForCallbackResult<R, T extends PostboyCallbackMessage<R>>(
+  waitForCallbackResult<T extends PostboyCallbackMessage<PostboyCallbackResult<T>>>(
     type: MessageType<T>,
     options: WaitOptions<T> = {},
-  ): Promise<R> {
+  ): Promise<PostboyCallbackResult<T>> {
     const timeout = this._getTimeout(options);
     const predicate = options.where ?? (() => true);
 
-    this._recordReplay(type);
-
-    return new Promise<R>((resolve, reject) => {
+    return new Promise<PostboyCallbackResult<T>>((resolve, reject) => {
       let completed = false;
       let subscription: Subscription | undefined;
 
-      const timer = setTimeout(() => {
+      const complete = (result: PostboyCallbackResult<T>): void => {
         if (completed) {
           return;
         }
 
         completed = true;
+        clearTimeout(timer);
         subscription?.unsubscribe();
+        resolve(result);
+      };
 
-        reject(
+      const fail = (error: unknown): void => {
+        if (completed) {
+          return;
+        }
+
+        completed = true;
+        clearTimeout(timer);
+        subscription?.unsubscribe();
+        reject(error);
+      };
+
+      const timer = setTimeout(() => {
+        fail(
           new Error(
             `Postboy waiter timeout: expected callback result for ${this._getTypeName(type)} within ${timeout}ms.`,
           ),
         );
       }, timeout);
 
-      subscription = this._postboy.sub(type).subscribe({
-        next: (message) => {
-          if (completed || !predicate(message)) {
-            return;
+      subscription = this._history.callbackResult$(type).subscribe({
+        next: (item) => {
+          if (predicate(item.message)) {
+            complete(item.result);
           }
-
-          const originalFinish = message.finish.bind(message);
-
-          message.finish = ((result: R) => {
-            originalFinish(result);
-
-            if (!completed) {
-              completed = true;
-              clearTimeout(timer);
-              subscription?.unsubscribe();
-              resolve(result);
-            }
-          }) as typeof message.finish;
         },
-        error: (error) => {
-          if (completed) {
-            return;
-          }
-
-          completed = true;
-          clearTimeout(timer);
-          subscription?.unsubscribe();
-          reject(error);
-        },
+        error: fail,
       });
+
+      const existingResult = this._history.callbackResults(type).all.find((item) => predicate(item.message));
+
+      if (existingResult) {
+        complete(existingResult.result);
+      }
     });
   }
 

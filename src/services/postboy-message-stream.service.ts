@@ -7,13 +7,15 @@ import {
   PostboyExecutor,
   PostboyMessage,
 } from '@artstesh/postboy';
+import { asyncScheduler, observeOn, Subscription } from 'rxjs';
 
 export class PostboyMessageStreamService {
+  private readonly _subscriptions: Subscription[] = [];
+
   constructor(
     private postboy: PostboyServiceMock,
     private _registry: PostboyAbstractRegistrator,
-  ) {
-  }
+  ) {}
 
   mockEvent<T extends PostboyMessage>(message: T): void {
     this._registry.recordReplay(message.constructor as MessageType<T>);
@@ -21,8 +23,11 @@ export class PostboyMessageStreamService {
   }
 
   mockCallback<R, T extends PostboyCallbackMessage<R>>(type: MessageType<T>, action: (m: T) => R): void {
-    this._registry.recordSubject(type);
-    this.postboy.sub(type).subscribe((m) => m.finish(action(m)));
+    this._registry.recordReplay(type);
+
+    const subscription = this.postboy.sub(type).subscribe((m) => m.finish(action(m)));
+
+    this._subscriptions.push(subscription);
   }
 
   mockExecute<R, T extends PostboyExecutor<R>>(type: MessageType<T>, action: (m: T) => R): void {
@@ -30,6 +35,9 @@ export class PostboyMessageStreamService {
   }
 
   dispose(): void {
+    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this._subscriptions.length = 0;
+
     this._registry.down();
   }
 }
