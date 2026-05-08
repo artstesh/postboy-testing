@@ -1,4 +1,4 @@
-import { WaitOptions } from '../models/waiter.oprions';
+import { WaitOptions } from '../models/waiter.options';
 import {
   AddNamespace,
   EliminateNamespace,

@@ -10,6 +10,6 @@ export {PostboyWorld} from './services/postboy.world';
 export {PostboyMessageStreamService} from './services/postboy-message-stream.service';
 export {PostboyWorldVerifier} from './services/postboy-world.verifier';
 export {PostboyWaiterService} from './services/postboy-waiter.service';
-export {WaitOptions} from './models/waiter.oprions';
+export {WaitOptions} from './models/waiter.options';
 export {PostboyGivenService} from './services/given.service';
 export {PostboyThenService} from './services/postboy-then.service';

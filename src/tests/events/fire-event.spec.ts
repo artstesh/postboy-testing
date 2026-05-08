@@ -43,6 +43,7 @@ describe('Fire Events', () => {
       //
       let ev = world.history.messages(PaymentCompletedEvent).first;
       should().number(ev!.amount).equals(value);
+      should().objects({}, {}).equal();
     });
 
     it('waitFor works', async () => {
