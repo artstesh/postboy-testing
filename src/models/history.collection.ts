@@ -1,10 +1,10 @@
 export class HistoryCollection<T> {
   private _items: T[] = [];
 
-  add(item: T) : void{
+  add(item: T): void {
     this._items.push(item);
   }
-  hasItem(item: T) : boolean{
+  hasItem(item: T): boolean {
     return this._items.includes(item);
   }
   has(predicate: (i: T) => boolean): boolean {

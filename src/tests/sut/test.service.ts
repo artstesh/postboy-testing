@@ -19,7 +19,7 @@ export class TestService implements IPostboyDependingService {
 
   calculateSomething(x: number, y: number): number {
     const result = x + y;
-    this.postboy.fire(new SomethingCalculatedEvent(result))
+    this.postboy.fire(new SomethingCalculatedEvent(result));
     return result;
   }
 }

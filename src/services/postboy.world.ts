@@ -7,7 +7,7 @@ import { PostboyWaiterService } from './postboy-waiter.service';
 import { PostboyThenService } from './postboy-then.service';
 import { PostboyGivenService } from './given.service';
 
-const mockNamespace = 'mock-namespace-dcc9354a-2b41-4f85-aa61-4a789b00876d'
+const mockNamespace = 'mock-namespace-dcc9354a-2b41-4f85-aa61-4a789b00876d';
 
 export class PostboyWorld {
   private _postboy: PostboyServiceMock;

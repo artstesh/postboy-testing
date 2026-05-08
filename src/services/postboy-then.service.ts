@@ -28,4 +28,3 @@ export class PostboyThenService {
     return type.name;
   }
 }
-

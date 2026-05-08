@@ -11,9 +11,7 @@ import { PostboyMessageStreamService } from './postboy-message-stream.service';
 export type PostboyCallbackResult<T> = T extends PostboyCallbackMessage<infer R> ? R : never;
 
 export class PostboyGivenService {
-  constructor(
-    private _mocks: PostboyMessageStreamService,
-  ) {}
+  constructor(private _mocks: PostboyMessageStreamService) {}
 
   callback<T extends PostboyCallbackMessage<PostboyCallbackResult<T>>>(
     type: MessageType<T>,

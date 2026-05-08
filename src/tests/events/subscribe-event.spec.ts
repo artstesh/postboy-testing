@@ -15,7 +15,7 @@ class PreFireEventHandler {
   public value: number = 0;
 
   constructor(private postboy: PostboyService) {
-    postboy.sub(PreFireEvent).subscribe(ev => this.value = ev.value);
+    postboy.sub(PreFireEvent).subscribe((ev) => (this.value = ev.value));
   }
 }
 
@@ -54,7 +54,7 @@ describe('Subscribe Events', () => {
       //
       should().number(world.history.subs(PreFireEvent)).equals(1);
     });
-  })
+  });
 
   describe('non-strict', () => {
     beforeEach(() => {
@@ -75,5 +75,5 @@ describe('Subscribe Events', () => {
       //
       should().number(world.history.subs(PreFireEvent)).equals(1);
     });
-  })
+  });
 });

@@ -31,13 +31,11 @@ describe('TestService', () => {
     it('success', async () => {
       const count = Forger.create<number>()!;
       const weight = Forger.create<number>()!;
-      world.given
-        .callback(CountCandiesQuery, count)
-        .executor(WeighCandiesExecutor, weight);
+      world.given.callback(CountCandiesQuery, count).executor(WeighCandiesExecutor, weight);
       //
       service.up();
       //
-      const ev = await world.waiter.waitFor(CandiesHaveBeenWeighedEvent, {includeHistory: true});
+      const ev = await world.waiter.waitFor(CandiesHaveBeenWeighedEvent, { includeHistory: true });
       should().number(ev.weight).equals(weight);
     });
 
@@ -52,10 +50,10 @@ describe('TestService', () => {
       service = new TestService(world.postboy, color);
     });
 
-    it('should ignore unregistered',async () => {
+    it('should ignore unregistered', async () => {
       const result = service.calculateSomething(Forger.create<number>()!, Forger.create<number>()!);
       //
-      const ev = await world.waiter.waitFor(SomethingCalculatedEvent, {includeHistory: true});
+      const ev = await world.waiter.waitFor(SomethingCalculatedEvent, { includeHistory: true });
       should().number(ev.something).equals(result);
     });
   });
