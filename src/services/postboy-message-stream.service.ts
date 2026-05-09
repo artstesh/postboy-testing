@@ -7,7 +7,7 @@ import {
   PostboyExecutor,
   PostboyMessage,
 } from '@artstesh/postboy';
-import { asyncScheduler, observeOn, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 export class PostboyMessageStreamService {
   private readonly _subscriptions: Subscription[] = [];

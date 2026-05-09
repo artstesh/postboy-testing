@@ -2,7 +2,6 @@ import { PostboyCallbackMessage, PostboyGenericMessage, PostboyService } from '@
 import { PostboyWorld } from '../../services/postboy.world';
 import { Forger } from '@artstesh/forger';
 import { should } from '@artstesh/it-should';
-import { delay } from 'rxjs';
 
 class ToFireQuery extends PostboyCallbackMessage<string> {
   static readonly ID = '3bede7a9-7b36-4f5f-9f02-6908787ef785';
