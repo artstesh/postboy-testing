@@ -1,6 +1,6 @@
 import { PostboyMessageStore } from '@artstesh/postboy';
 import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscription';
-import { PostboyExecutor } from '@artstesh/postboy/lib/models/postboy-executor';
+import { PostboyExecutor } from '@artstesh/postboy';
 import { Subject } from 'rxjs';
 
 export class PostboyMessageStoreMock extends PostboyMessageStore {

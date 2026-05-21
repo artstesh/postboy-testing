@@ -1,13 +1,12 @@
 import { PostboyServiceMock } from '../mocks/postboy-service-mock';
 import {
-  AddNamespace,
   MessageType,
   PostboyAbstractRegistrator,
   PostboyCallbackMessage,
   PostboyExecutor,
   PostboyMessage,
 } from '@artstesh/postboy';
-import { asyncScheduler, observeOn, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 export class PostboyMessageStreamService {
   private readonly _subscriptions: Subscription[] = [];

@@ -29,10 +29,10 @@
   },
   "peerDependencies": {
     "rxjs": "^7.0.0",
-    "@artstesh/postboy": "^3.3.1"
+    "@artstesh/postboy": "~3.3.1"
   },
   "devDependencies": {
-    "@artstesh/postboy": "^3.3.1",
+    "@artstesh/postboy": "~3.3.1",
     "@artstesh/forger": "^2.0.0",
     "@artstesh/it-should": "^2.0.0",
     "@types/jest": "29.5.12",
