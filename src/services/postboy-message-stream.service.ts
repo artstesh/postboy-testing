@@ -1,6 +1,5 @@
 import { PostboyServiceMock } from '../mocks/postboy-service-mock';
 import {
-  AddNamespace,
   MessageType,
   PostboyAbstractRegistrator,
   PostboyCallbackMessage,
