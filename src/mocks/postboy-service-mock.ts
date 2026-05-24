@@ -8,10 +8,10 @@ import {
   PostboyGenericMessage,
   PostboyService,
 } from '@artstesh/postboy';
+import { PostboyTestingSettings } from '../models/postboy-testing.settings';
 import { PostboyMessageStoreMock } from './postboy-message-store.mock';
 import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock';
 import { PostboyNamespaceStoreMock } from './postboy-namespace-store.mock';
-import { PostboyTestingSettings } from '../models/postboy-testing.settings';
 
 export class PostboyServiceMock extends PostboyService {
   constructor(

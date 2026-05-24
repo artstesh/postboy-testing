@@ -1,5 +1,5 @@
 import { PostboyMessageStore } from '@artstesh/postboy';
-import { PostboySubscription } from '@artstesh/postboy/lib/models/postboy-subscription';
+import { PostboySubscription } from '@artstesh/postboy';
 import { PostboyExecutor } from '@artstesh/postboy';
 import { Subject } from 'rxjs';
 

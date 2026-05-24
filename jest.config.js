@@ -1,11 +1,17 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+/** @type {import('jest').Config} */
 module.exports = {
-  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/*.spec.ts'],
   transform: {
-    ".*.spec.ts": ["ts-jest", {
-      astTransformers: {
-        before: ['@artstesh/forger']
-      }
-    }]
-  }
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.test.json',
+        astTransformers: {
+          before: ['@artstesh/forger'],
+        },
+      },
+    ],
+  },
+  moduleFileExtensions: ['ts', 'js', 'json'],
 };

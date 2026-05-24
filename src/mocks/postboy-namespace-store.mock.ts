@@ -1,3 +1,3 @@
-import { PostboyNamespaceStore } from '@artstesh/postboy/lib/services/postboy-namespace.store';
+import { PostboyNamespaceStore } from '@artstesh/postboy';
 
 export class PostboyNamespaceStoreMock extends PostboyNamespaceStore {}
