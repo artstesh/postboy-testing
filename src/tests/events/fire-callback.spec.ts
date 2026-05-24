@@ -5,7 +5,7 @@ import { should } from '@artstesh/it-should';
 import { delay } from 'rxjs';
 
 class ToFireQuery extends PostboyCallbackMessage<string> {
-  static readonly ID = '3bede7a9-7b36-4f5f-9f02-6908787ef785';
+  static readonly ID = '8ec5e78c-f010-4ccf-8859-c6f8d50ad0df';
 
   constructor() {
     super();

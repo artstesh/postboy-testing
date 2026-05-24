@@ -4,7 +4,7 @@ import { Forger } from '@artstesh/forger';
 import { should } from '@artstesh/it-should';
 
 class PreFireEvent extends PostboyGenericMessage {
-  static readonly ID = '3bede7a9-7b36-4f5f-9f02-6908787ef785';
+  static readonly ID = 'efe45831-7cb9-4246-afb9-b68b400f46f6';
 
   constructor(public value: number) {
     super();
