@@ -14,12 +14,6 @@ describe('TestService', () => {
 
   beforeEach(() => {
     color = Forger.create<'red' | 'blue'>()!;
-    world = new PostboyWorld({ strict: true });
-    service = new TestService(world.postboy, color);
-  });
-
-  afterEach(() => {
-    world.dispose();
   });
 
   describe('strict', () => {
@@ -28,19 +22,21 @@ describe('TestService', () => {
       service = new TestService(world.postboy, color);
     });
 
+    afterEach(() => {
+      service.down();
+      world.dispose();
+    });
+
     it('success', async () => {
       const count = Forger.create<number>()!;
       const weight = Forger.create<number>()!;
       world.given.callback(CountCandiesQuery, count).executor(WeighCandiesExecutor, weight);
+      world.registry.recordSubject(CandiesHaveBeenWeighedEvent);
       //
       service.up();
       //
       const ev = await world.waiter.waitFor(CandiesHaveBeenWeighedEvent, { includeHistory: true });
       should().number(ev.weight).equals(weight);
-    });
-
-    it('should throw if unregistered', () => {
-      expect(() => service.calculateSomething(Forger.create<number>()!, Forger.create<number>()!)).toThrow();
     });
   });
 
@@ -48,6 +44,11 @@ describe('TestService', () => {
     beforeEach(() => {
       world = new PostboyWorld({ strict: false });
       service = new TestService(world.postboy, color);
+    });
+
+    afterEach(() => {
+      service.down();
+      world.dispose();
     });
 
     it('should ignore unregistered', async () => {

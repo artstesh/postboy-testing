@@ -174,3 +174,4 @@ bower_components/
 /coverage
 /.npmrc
 package-lock.json
+/stats/**/*.*
