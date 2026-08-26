@@ -43,7 +43,8 @@
     }
   },
   "files": [
-    "lib/**/*"
+    "lib/**/*",
+    "AI_SKILL.md"
   ],
   "private": false,
   "repository": {
