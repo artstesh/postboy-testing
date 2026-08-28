@@ -1,4 +1,5 @@
-import { checkId, MessageType, PostboyCallbackMessage, PostboyMessage } from '@artstesh/postboy';
+import { MessageType, PostboyCallbackMessage, PostboyMessage } from '@artstesh/postboy';
+import { checkId } from '../utils/check-id.util';
 import { Observable, Subject } from 'rxjs';
 import { CallbackResultHistoryItem } from '../models/callback-result-history-item';
 import { HistoryCollection } from '../models/history.collection';

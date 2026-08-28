@@ -1,5 +1,5 @@
 import { MessageHistory } from './message-history';
-import { checkId, MessageType, PostboyMessage } from '@artstesh/postboy';
+import { MessageType, PostboyMessage } from '@artstesh/postboy';
 
 export class PostboyWorldVerifier {
   constructor(private _history: MessageHistory) {}

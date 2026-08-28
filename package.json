@@ -2,10 +2,10 @@
   "name": "@artstesh/postboy-testing",
   "version": "3.4.1",
   "author": "artstesh",
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
   "types": "lib/index.d.ts",
   "license": "MIT",
-  "description": "Let's test the postboy ;)",
+  "description": "BDD-style testing toolkit for the @artstesh/postboy message bus: recording service mock, fluent assertions, and async waiters",
   "homepage": "https://postboy.artstesh.ru/testing-overview.html",
   "sideEffects": false,
   "keywords": [
@@ -56,10 +56,10 @@
   },
   "peerDependencies": {
     "rxjs": "^7.0.0",
-    "@artstesh/postboy": "~3.4.1"
+    "@artstesh/postboy": "^3.4.1"
   },
   "devDependencies": {
-    "@artstesh/postboy": "~3.4.1",
+    "@artstesh/postboy": "~3.5.1",
     "@artstesh/forger": "^2.0.0",
     "@artstesh/it-should": "^2.0.0",
     "@types/jest": "29.5.12",

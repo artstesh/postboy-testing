@@ -4,7 +4,7 @@
 
 ## 1. 🚀 SCOPE & IMPORTS
 
-`@artstesh/postboy-testing` is a BDD-style (Given / When / Then) testing toolkit for the `@artstesh/postboy` message bus. It provides: a recording `PostboyServiceMock` (captures fired messages, subscriptions, and callback results), fluent assertion builders (`fired`/`subscribed`/`notFired`), async waiters (`waitFor`, `waitForMany`, `waitForAny`, `waitForCallbackResult`, `waitForNone`), and mock stubs for executors / callback messages / events. Runtime dependencies are peer deps: `rxjs ^7` and `@artstesh/postboy ~3.4.1` — you must install both.
+`@artstesh/postboy-testing` is a BDD-style (Given / When / Then) testing toolkit for the `@artstesh/postboy` message bus. It provides: a recording `PostboyServiceMock` (captures fired messages, subscriptions, and callback results), fluent assertion builders (`fired`/`subscribed`/`notFired`), async waiters (`waitFor`, `waitForMany`, `waitForAny`, `waitForCallbackResult`, `waitForNone`), and mock stubs for executors / callback messages / events. Runtime dependencies are peer deps: `rxjs ^7` and `@artstesh/postboy ^3.4.1` (3.4.x and 3.5.x are supported) — you must install both.
 
 Dual-format build (tsup); named exports only, no default export.
 
