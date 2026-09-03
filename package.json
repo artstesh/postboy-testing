@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "description": "BDD-style testing toolkit for the @artstesh/postboy message bus: recording service mock, fluent assertions, and async waiters",
-  "homepage": "https://postboy.artstesh.ru/testing-overview.html",
+  "homepage": "https://postboy.artstesh.ru/testing",
   "sideEffects": false,
   "keywords": [
     "testing",
