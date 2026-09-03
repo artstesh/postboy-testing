@@ -5,6 +5,7 @@ import {
   PostboyCallbackMessage,
   PostboyExecutor,
   PostboyGenericMessage,
+  PostboyMessage,
   PostboyService,
 } from '@artstesh/postboy';
 import { checkId } from '../utils/check-id.util';
@@ -14,15 +15,28 @@ import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock'
 import { PostboyNamespaceStoreMock } from './postboy-namespace-store.mock';
 
 export class PostboyServiceMock extends PostboyService {
+  private _store: PostboyMessageStoreMock;
+
   constructor(
     private _history: MessageHistory,
     settings: PostboyTestingSettings = { strict: false },
   ) {
+    let store!: PostboyMessageStoreMock;
     super({
-      getMessageStore: () => new PostboyMessageStoreMock(settings.strict),
+      getMessageStore: () => (store ??= new PostboyMessageStoreMock(settings.strict)),
       getMiddlewareService: () => new PostboyMiddlewareServiceMock(),
       getNamespaceStore: () => new PostboyNamespaceStoreMock(),
     });
+    this._store = store;
+  }
+
+  /**
+   * Whether a message type is already registered on the bus. Re-registering a taken
+   * id makes the store replace the subject, silently detaching existing subscribers
+   * and replay buffers — callers must check this before any `record*` call.
+   */
+  isRegistered<T extends PostboyMessage>(type: MessageType<T>): boolean {
+    return this._store.has(checkId(type));
   }
 
   exec<E extends PostboyExecutor<T>, T>(executor: E): T {

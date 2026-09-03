@@ -8,6 +8,10 @@ export class PostboyMessageStoreMock extends PostboyMessageStore {
     super();
   }
 
+  has(id: string): boolean {
+    return this.messages.has(id);
+  }
+
   override getMessage(id: string, name: string): PostboySubscription<any> {
     if (!this.strict && !this.messages.get(id)) this.registerMessage(id, new PostboySubscription(new Subject()));
     return super.getMessage(id, name);

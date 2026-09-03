@@ -353,6 +353,10 @@ export class PostboyWaiterService {
   }
 
   private _recordReplay<T extends PostboyMessage>(type: MessageType<T>): void {
+    // Re-registering a type replaces its subject, silently detaching existing
+    // subscribers (the SUT) and dropping replay buffers (e.g. from given.event).
+    // In non-strict mode the store mock auto-creates a subject on demand anyway.
+    if (this._postboy.isRegistered(type)) return;
     this._registry.recordReplay(type);
   }
 
