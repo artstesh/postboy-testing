@@ -1,6 +1,6 @@
 {
   "name": "@artstesh/postboy-testing",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "author": "artstesh",
   "main": "lib/index.cjs",
   "types": "lib/index.d.ts",
