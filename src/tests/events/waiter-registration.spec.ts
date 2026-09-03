@@ -60,6 +60,8 @@ describe('Waiter Registrations', () => {
     //
     world.postboy.fire(new WaitedEvent(value));
     //
-    should().number((await waiting).value).equals(value);
+    should()
+      .number((await waiting).value)
+      .equals(value);
   });
 });
