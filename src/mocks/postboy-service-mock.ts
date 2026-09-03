@@ -1,13 +1,13 @@
 import { Observable } from 'rxjs';
 import { MessageHistory } from '../services/message-history';
 import {
-  checkId,
   MessageType,
   PostboyCallbackMessage,
   PostboyExecutor,
   PostboyGenericMessage,
   PostboyService,
 } from '@artstesh/postboy';
+import { checkId } from '../utils/check-id.util';
 import { PostboyTestingSettings } from '../models/postboy-testing.settings';
 import { PostboyMessageStoreMock } from './postboy-message-store.mock';
 import { PostboyMiddlewareServiceMock } from './postboy-middleware-service.mock';

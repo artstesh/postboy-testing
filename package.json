@@ -54,10 +54,10 @@
     "url": "https://github.com/artstesh/postboy-testing/issues"
   },
   "peerDependencies": {
-    "@artstesh/postboy": "~1.3.0"
+    "@artstesh/postboy": "~1.5.1"
   },
   "devDependencies": {
-    "@artstesh/postboy": "~1.3.0",
+    "@artstesh/postboy": "~1.5.1",
     "@artstesh/forger": "^2.0.0",
     "@artstesh/it-should": "^2.0.0",
     "@types/jest": "29.5.12",
