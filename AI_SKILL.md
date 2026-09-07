@@ -107,7 +107,7 @@ Waiter semantics:
 - `waitFor`: resolves with the first future message matching `where` (or any message if omitted); `includeHistory: true` first scans already-recorded messages and resolves synchronously if found.
 - `waitForMany`: collects until `count` matches; with `exact: true` it waits the full timeout and resolves only if exactly `count` arrived (rejecting on both under- and over-count at timeout); without `exact` it resolves as soon as `count` are collected (history counts toward the total when `includeHistory`).
 - `waitForAny`: races several types; resolves with the first matching message of any type.
-- `waitForCallbackResult`: resolves with the result of the next (or already-recorded) `message.finish(result)` for the given callback message type; emits through `history.callbackResult$(type)`.
+- `waitForCallbackResult`: resolves with the result of the next `message.finish(result)` for the given callback message type; `includeHistory: true` first scans already-recorded results, same opt-in as `waitFor` (callback stubs finish synchronously, so awaiting after the fact needs the flag). Emits through `history.callbackResult$(type)`.
 - `waitForNone`: resolves after `timeout` ms of silence; rejects immediately if a matching message fires (or was found in history with `includeHistory`). `timeoutMessage` overrides the rejection text.
 
 ### MessageHistory & HistoryCollection
@@ -205,7 +205,7 @@ describe('CandiesService', () => {
       where: (m) => m.count > 0,
     });
     const results = await world.waiter.waitForMany(CandiesHaveBeenWeighedEvent, 3, { includeHistory: true });
-    const payload = await world.waiter.waitForCallbackResult(FetchDataMessage);
+    const payload = await world.waiter.waitForCallbackResult(FetchDataMessage, { includeHistory: true });
     await world.waiter.waitForNone(SomethingCalculatedEvent, { timeout: 500 });
   });
 });
