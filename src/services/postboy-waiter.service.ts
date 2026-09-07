@@ -165,6 +165,14 @@ export class PostboyWaiterService {
     const timeout = this._getTimeout(options);
     const predicate = options.where ?? (() => true);
 
+    if (options.includeHistory) {
+      const existingResult = this._history.callbackResults(type).all.find((item) => predicate(item.message));
+
+      if (existingResult) {
+        return Promise.resolve(existingResult.result);
+      }
+    }
+
     return new Promise<PostboyCallbackResult<T>>((resolve, reject) => {
       let completed = false;
       let subscription: Subscription | undefined;
@@ -207,12 +215,6 @@ export class PostboyWaiterService {
         },
         error: fail,
       });
-
-      const existingResult = this._history.callbackResults(type).all.find((item) => predicate(item.message));
-
-      if (existingResult) {
-        complete(existingResult.result);
-      }
     });
   }
 
