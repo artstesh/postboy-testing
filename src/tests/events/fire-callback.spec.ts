@@ -49,7 +49,7 @@ describe('Fire Callback Events', () => {
     //
     service.fire();
     //
-    await world.waiter.waitForCallbackResult(ToFireQuery);
+    await world.waiter.waitForCallbackResult(ToFireQuery, { includeHistory: true });
     should().string(service.value).equals(value);
   });
 
