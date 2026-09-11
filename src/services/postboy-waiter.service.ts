@@ -137,6 +137,18 @@ export class PostboyWaiterService {
 
           collected.push(message);
 
+          if (options.exact && collected.length > count) {
+            completed = true;
+            clearTimeout(timer);
+            subscription?.unsubscribe();
+            reject(
+              new Error(
+                `Postboy waiter: expected ${this._getTypeName(type)} to be fired exactly ${count} time(s), but got ${collected.length}.`,
+              ),
+            );
+            return;
+          }
+
           if (!options.exact && collected.length >= count) {
             completed = true;
             clearTimeout(timer);
