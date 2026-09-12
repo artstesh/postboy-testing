@@ -1,4 +1,4 @@
-# AI_SKILL.md — @artstesh/postboy-testing v3.4 (Context Document for AI Agents)
+# AI_SKILL.md — @artstesh/postboy-testing v3.5 (Context Document for AI Agents)
 
 > Source of truth: `src/index.ts` + `src/**/*.ts` of this repository. This document targets **consumers** writing tests against the `@artstesh/postboy` message bus, not contributors.
 
@@ -47,12 +47,20 @@ class PostboyWorld {
 Extends `PostboyService` (all real bus methods work). Overrides add recording:
 
 ```ts
-fire<T extends PostboyGenericMessage>(message: T): void;            // records message
+constructor(history: MessageHistory, settings?: PostboyTestingSettings);
+// the first argument must be a MessageHistory — anything else throws immediately;
+// prefer PostboyWorld, which wires the mock and its shared history for you
+
+fire<T extends PostboyGenericMessage>(message: T): void;            // records message; for callback messages also intercepts finish() so results land in history
 exec<E extends PostboyExecutor<T>, T>(executor: E): T;              // records executor as message
 sub<T extends PostboyGenericMessage>(type: MessageType<T>): Observable<T>;  // increments subscription counter
 once<T extends PostboyGenericMessage>(type: MessageType<T>): Observable<T>; // also counted
 fireCallback<T>(message: PostboyCallbackMessage<T>, action?: (e: T) => void): Observable<T>; // records + intercepts finish() to record results
 ```
+
+Callback results are recorded no matter how the message was dispatched — `fire` and `fireCallback` install the same `finish` interceptor. A real handler completing a query fired with plain `fire` is visible to `history.callbackResults(type)` and `waitForCallbackResult`, exactly like a `given.callback` stub.
+
+In non-strict mode, dispatching a message or executor whose class has no usable id (no static `ID`, or not extending a postboy base class) logs a one-time `console.warn` per class name: such messages are silently registered under an empty key, so nothing is delivered or recorded.
 
 ### PostboyGivenService — stubbing (all methods chainable, return `this`)
 
@@ -107,7 +115,7 @@ Waiter semantics:
 - `waitFor`: resolves with the first future message matching `where` (or any message if omitted); `includeHistory: true` first scans already-recorded messages and resolves synchronously if found.
 - `waitForMany`: collects until `count` matches; with `exact: true` it waits the full timeout and resolves only if exactly `count` arrived (rejecting on both under- and over-count at timeout); without `exact` it resolves as soon as `count` are collected (history counts toward the total when `includeHistory`).
 - `waitForAny`: races several types; resolves with the first matching message of any type.
-- `waitForCallbackResult`: resolves with the result of the next `message.finish(result)` for the given callback message type; `includeHistory: true` first scans already-recorded results, same opt-in as `waitFor` (callback stubs finish synchronously, so awaiting after the fact needs the flag). Emits through `history.callbackResult$(type)`.
+- `waitForCallbackResult`: resolves with the result of the next `message.finish(result)` for the given callback message type; `includeHistory: true` first scans already-recorded results, same opt-in as `waitFor` (stubs and synchronous handlers finish during the `fire` call itself, so awaiting after the fact needs the flag). Results are recorded no matter how the message was dispatched — `fire` or `fireCallback`. Emits through `history.callbackResult$(type)`.
 - `waitForNone`: resolves after `timeout` ms of silence; rejects immediately if a matching message fires (or was found in history with `includeHistory`). `timeoutMessage` overrides the rejection text.
 
 ### MessageHistory & HistoryCollection
@@ -220,6 +228,22 @@ Rules of composition:
 - Assertion methods throw (`times`, `with`, `last`, `first`, `notFired`); `PostboyWorldVerifier` returns booleans — use it inside conditional test logic, use `then` for straight assertions.
 - All waiter timeouts reject with descriptive `Error` messages that include the class name and counts — assert on behavior, not on message text.
 
+### Testing a real handler (your service is the subscriber)
+
+When the SUT is the responder — a service that subscribes to a `PostboyCallbackMessage` and completes the caller with `query.finish(result)` — build it on `world.postboy`, register the message type first, then dispatch the query and await its result. Results are recorded for both `fire` and `fireCallback`, so drive the query the way production does:
+
+```ts
+it('answers GetUserPermissionsQuery', async () => {
+  world.registry.recordSubject(GetUserPermissionsQuery);        // strict mode: register the type
+  const handler = new PermissionsService(world.postboy);        // or built by Angular DI with world.postboy
+  world.postboy.fire(new GetUserPermissionsQuery('u-1'));       // plain fire is recorded too
+  const result = await world.waiter.waitForCallbackResult(GetUserPermissionsQuery, { includeHistory: true });
+  expect(result).toEqual({ state: 'ok' });
+});
+```
+
+For an asynchronous handler (result after an HTTP call) await `waitForCallbackResult` without `includeHistory` — it resolves on the recorded `finish` whenever it happens; `includeHistory: true` additionally scans results already recorded before the wait started.
+
 ## 5. ⚠️ ANTI-PATTERNS & PITFALLS
 
 **Do NOT generate these (common LLM hallucinations):**
@@ -236,7 +260,7 @@ Rules of composition:
 
 **Hard constraints:**
 
-- Never construct `PostboyServiceMock` without a `MessageHistory` — the first constructor argument is the shared history instance; use `PostboyWorld` instead of wiring manually.
+- Never construct `PostboyServiceMock` without a `MessageHistory` — the first constructor argument is the shared history instance, and anything else throws immediately; use `PostboyWorld` instead of wiring manually.
 - Never reuse a `PostboyWorld` across tests without `dispose()` — history counters accumulate and `times`/`once` assertions will see stale records.
 - Do not call `world.dispose()` twice or use the world afterwards; its namespaces are eliminated and the bus disposed.
 - `given.event()` overwrites the replay registration for that message type and fires immediately; calling it repeatedly records multiple fires — intentional in `times(n)` tests, a false positive otherwise.
