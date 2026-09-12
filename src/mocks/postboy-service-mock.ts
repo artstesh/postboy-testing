@@ -16,11 +16,20 @@ import { PostboyNamespaceStoreMock } from './postboy-namespace-store.mock';
 
 export class PostboyServiceMock extends PostboyService {
   private _store: PostboyMessageStoreMock;
+  private _strict: boolean;
+  private _intercepted = new WeakSet<PostboyCallbackMessage<any>>();
+  private _warnedTypes = new Set<string>();
 
   constructor(
     private _history: MessageHistory,
     settings: PostboyTestingSettings = { strict: false },
   ) {
+    if (!(_history instanceof MessageHistory)) {
+      throw new Error(
+        'PostboyServiceMock expects a MessageHistory instance as the first constructor argument. ' +
+          'Prefer PostboyWorld, which wires the mock and its shared history for you.',
+      );
+    }
     let store!: PostboyMessageStoreMock;
     super({
       getMessageStore: () => (store ??= new PostboyMessageStoreMock(settings.strict)),
@@ -28,6 +37,7 @@ export class PostboyServiceMock extends PostboyService {
       getNamespaceStore: () => new PostboyNamespaceStoreMock(),
     });
     this._store = store;
+    this._strict = settings.strict;
   }
 
   /**
@@ -40,6 +50,7 @@ export class PostboyServiceMock extends PostboyService {
   }
 
   exec<E extends PostboyExecutor<T>, T>(executor: E): T {
+    this._warnIfNoId(executor, 'executed');
     this._history.addMessage(executor);
     return super.exec(executor);
   }
@@ -57,20 +68,51 @@ export class PostboyServiceMock extends PostboyService {
   }
 
   fire<T extends PostboyGenericMessage>(message: T) {
+    this._warnIfNoId(message, 'fired');
     this._history.addMessage(message);
+    if (message instanceof PostboyCallbackMessage) this._interceptFinish(message);
     super.fire(message);
   }
 
   fireCallback<T>(message: PostboyCallbackMessage<T>, action?: (e: T) => void): Observable<T> {
+    this._warnIfNoId(message, 'fired');
     this._history.addMessage(message);
+    this._interceptFinish(message);
+    return super.fireCallback(message, action);
+  }
 
+  /**
+   * Wraps the message's own `finish` so every result it produces lands in the shared
+   * history — and therefore in `history.callbackResults` and `waitForCallbackResult` —
+   * no matter whether the message is dispatched by `fire` or by `fireCallback`. A real
+   * handler completing a query fired with plain `fire` is recorded the same way as a
+   * `given.callback` stub. Idempotent per message instance.
+   */
+  private _interceptFinish(message: PostboyCallbackMessage<any>): void {
+    if (this._intercepted.has(message)) return;
+    this._intercepted.add(message);
     const originalFinish = message.finish.bind(message);
-
-    message.finish = ((result: T) => {
+    message.finish = ((result: any) => {
       this._history.addCallbackResult(message, result);
       originalFinish(result);
     }) as typeof message.finish;
+  }
 
-    return super.fireCallback(message, action);
+  /**
+   * A message or executor without a usable id — the class declares no static `ID` or does
+   * not extend a postboy base class — is routed under the `undefined` key. In strict mode
+   * the bus throws; in non-strict mode it is silently auto-registered, so nothing is ever
+   * delivered or recorded. Warns once per class name so the mistake stays visible.
+   */
+  private _warnIfNoId(message: PostboyMessage, verb: string): void {
+    if (this._strict || !!message.id) return;
+    const name = message.constructor.name;
+    if (this._warnedTypes.has(name)) return;
+    this._warnedTypes.add(name);
+    console.warn(
+      `[postboy-testing] ${name} is ${verb} without a message id: the class misses a static ID ` +
+        `or does not extend a postboy base class. In non-strict mode it is silently registered ` +
+        `under an empty key — nothing is delivered or recorded.`,
+    );
   }
 }
